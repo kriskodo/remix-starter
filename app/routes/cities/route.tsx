@@ -14,11 +14,10 @@ import { addCity, getCities } from "~/db";
 import { authenticator } from "~/services/auth.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const user = await authenticator.isAuthenticated(request);
-  if (!user) {
-    redirect("/login");
-    return;
-  }
+  await authenticator.isAuthenticated(request, {
+    failureRedirect: "/login",
+  });
+
   const cities = await getCities();
   return cities;
 };
