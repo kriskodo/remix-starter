@@ -1,4 +1,8 @@
-import { ActionFunctionArgs, redirect } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  redirect,
+} from "@remix-run/node";
 import {
   Form,
   Link,
@@ -7,10 +11,15 @@ import {
   useNavigation,
 } from "@remix-run/react";
 import { addCity, getCities } from "~/db";
+import { authenticator } from "~/services/auth.server";
 
-export const loader = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const user = await authenticator.isAuthenticated(request);
+  if (!user) {
+    redirect("/login");
+    return;
+  }
   const cities = await getCities();
-
   return cities;
 };
 
